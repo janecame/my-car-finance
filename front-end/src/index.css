@@ -1,0 +1,12 @@
+/* Minimal reset — MUI CssBaseline handles the rest. */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+}

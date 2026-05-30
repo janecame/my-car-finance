@@ -1,0 +1,4 @@
+# --- GLOBAL IGNORES ---
+
+node_modules/
+.env
