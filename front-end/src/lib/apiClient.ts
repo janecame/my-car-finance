@@ -8,6 +8,6 @@ import axios from 'axios'
  * calls for `apiClient` requests; nothing else needs to change.
  */
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? '/api',
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3001',
   headers: { 'Content-Type': 'application/json' },
 })

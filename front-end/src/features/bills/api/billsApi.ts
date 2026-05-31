@@ -1,48 +1,29 @@
 import type { Bill, BillInput } from '@/types/bill'
-import { db, uid, withLatency } from '@/mocks/db'
+import { apiClient } from '@/lib/apiClient'
 import { monthKey } from '@/lib/date'
 
-/**
- * Bills data access. Backed by the mock store today; swap each body for an
- * `apiClient` call when the Express backend is ready (signatures stay the same).
- */
 export const billsApi = {
-  list(): Promise<Bill[]> {
-    return withLatency(() => db.bills)
+  async list(): Promise<Bill[]> {
+    const res = await apiClient.get<{ data: Bill[] }>('/bills')
+    return res.data.data
   },
 
-  create(input: BillInput): Promise<Bill> {
-    return withLatency(() => {
-      const bill: Bill = { ...input, id: uid('bill'), paidMonths: [] }
-      db.bills.push(bill)
-      return bill
-    })
+  async create(input: BillInput): Promise<Bill> {
+    const res = await apiClient.post<{ data: Bill }>('/bills', input)
+    return res.data.data
   },
 
-  update(id: string, input: BillInput): Promise<Bill> {
-    return withLatency(() => {
-      const bill = db.bills.find((b) => b.id === id)
-      if (!bill) throw new Error('Bill not found')
-      Object.assign(bill, input)
-      return bill
-    })
+  async update(id: string, input: BillInput): Promise<Bill> {
+    const res = await apiClient.patch<{ data: Bill }>(`/bills/${id}`, input)
+    return res.data.data
   },
 
-  remove(id: string): Promise<void> {
-    return withLatency(() => {
-      db.bills = db.bills.filter((b) => b.id !== id)
-    })
+  async remove(id: string): Promise<void> {
+    await apiClient.delete(`/bills/${id}`)
   },
 
-  /** Toggle the paid state of a bill for a given month (defaults to current). */
-  togglePaid(id: string, month: string = monthKey()): Promise<Bill> {
-    return withLatency(() => {
-      const bill = db.bills.find((b) => b.id === id)
-      if (!bill) throw new Error('Bill not found')
-      bill.paidMonths = bill.paidMonths.includes(month)
-        ? bill.paidMonths.filter((m) => m !== month)
-        : [...bill.paidMonths, month]
-      return bill
-    })
+  async togglePaid(id: string, month: string = monthKey()): Promise<Bill> {
+    const res = await apiClient.patch<{ data: Bill }>(`/bills/${id}/toggle-paid`, { month })
+    return res.data.data
   },
 }

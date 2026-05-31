@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button, Stack, CircularProgress, Box } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { PageHeader } from '@/components/common/PageHeader'
+import { FetchError } from '@/components/common/FetchError'
 import { MonthlyTotalCard } from '@/features/bills/components/MonthlyTotalCard'
 import { BillCard } from '@/features/bills/components/BillCard'
 import { BillFormDialog } from '@/features/bills/components/BillFormDialog'
@@ -18,7 +19,7 @@ import type { Bill } from '@/types/bill'
 import { monthKey } from '@/lib/date'
 
 export function BillsPage() {
-  const { data: bills = [], isLoading } = useBills()
+  const { data: bills = [], isLoading, isError } = useBills()
   const createBill = useCreateBill()
   const updateBill = useUpdateBill()
   const deleteBill = useDeleteBill()
@@ -59,7 +60,9 @@ export function BillsPage() {
         }
       />
 
-      {isLoading ? (
+      {isError ? (
+        <FetchError message="Could not load your bills. Try refreshing the page." />
+      ) : isLoading ? (
         <Box sx={{ textAlign: 'center', py: 6 }}>
           <CircularProgress />
         </Box>

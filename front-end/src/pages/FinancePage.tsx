@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button, Stack, Card, CardContent, Typography, Box, CircularProgress } from '@mui/material'
 import AddIcon from '@mui/icons-material/Add'
 import { PageHeader } from '@/components/common/PageHeader'
+import { FetchError } from '@/components/common/FetchError'
 import { BoundaryProgress } from '@/features/finance/components/BoundaryProgress'
 import { BoundaryDialog } from '@/features/finance/components/BoundaryDialog'
 import { RideFormDialog } from '@/features/finance/components/RideFormDialog'
@@ -17,8 +18,8 @@ import {
 import type { BoundaryFormValues, RideFormValues } from '@/features/finance/schema'
 
 export function FinancePage() {
-  const { data: boundary, isLoading: loadingBoundary } = useBoundary()
-  const { data: rides, isLoading: loadingRides } = useRides()
+  const { data: boundary, isLoading: loadingBoundary, isError: boundaryError } = useBoundary()
+  const { data: rides, isLoading: loadingRides, isError: ridesError } = useRides()
   const setBoundary = useSetBoundary()
   const addRide = useAddRide()
   const removeRide = useRemoveRide()
@@ -49,7 +50,15 @@ export function FinancePage() {
         }
       />
 
-      {loadingBoundary || loadingRides || !boundary ? (
+      {boundaryError || ridesError ? (
+        <FetchError
+          message={
+            boundaryError
+              ? 'Could not load your earnings target. Try refreshing the page.'
+              : 'Could not load your rides. Try refreshing the page.'
+          }
+        />
+      ) : loadingBoundary || loadingRides || !boundary ? (
         <Box sx={{ textAlign: 'center', py: 6 }}>
           <CircularProgress />
         </Box>

@@ -31,20 +31,7 @@
         ]
       }
     ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$raw = [Console]::In.ReadToEnd(); $data = $raw | ConvertFrom-Json; $file = $data.tool_input.file_path; if ($file -match '\\.(tsx|ts|jsx|js|cs|csproj)$') { $timestamp = Get-Date -Format 'yyyy-MM-dd HH:mm:ss'; Add-Content -Path '.claude/edit-log.txt' -Value \"[$timestamp] EDITED: $file\" -Encoding utf8 }",
-            "shell": "powershell",
-            "async": true,
-            "statusMessage": "Logging file edit..."
-          }
-        ]
-      }
-    ],
+    "PostToolUse": [],
     "Stop": [
       {
         "hooks": [
@@ -62,6 +49,7 @@
       "Bash(npm *)",
       "Bash(npx *)",
       "Bash(git *)",
+      "Bash(gh *)",
       "Bash(sqlcmd *)",
       "Bash(dotnet *)",
       "Bash(New-Item *)",
@@ -91,8 +79,6 @@
       "Bash(jq *)",
       "Bash(curl *)"
     ],
-    "deny": [
-      "Bash(*)"
-    ]
+    "deny": []
   }
 }
