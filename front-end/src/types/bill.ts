@@ -6,8 +6,10 @@ export interface Bill {
   category: BillCategory
   /** Recurring monthly payment amount, in PHP. */
   amountMonthly: number
-  /** Day of the month the bill is due (1–31). */
-  dueDay: number
+  /** Next due date as an ISO date string (e.g. `2026-06-15`). Advances by one month after each payment. */
+  nextDueDate: string
+  /** Optional final payment date as an ISO date string (e.g. `2027-01-15`). Bill is complete after this date. */
+  endDate?: string
   /** Months already settled, as `YYYY-MM` keys (e.g. `2026-05`). */
   paidMonths: string[]
 }

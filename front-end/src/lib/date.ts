@@ -12,6 +12,31 @@ export function monthLabel(key: string = monthKey()): string {
   })
 }
 
+/**
+ * Advance an ISO date string by one month, preserving the day-of-month.
+ * e.g. `'2026-06-15'` → `'2026-07-15'`
+ */
+export function advanceOneMonth(isoDate: string): string {
+  const d = new Date(isoDate)
+  const day = d.getUTCDate()
+  d.setUTCMonth(d.getUTCMonth() + 1)
+  // If month overflow shifted the day (e.g. Jan 31 → Mar 3), clamp to last day of next month.
+  if (d.getUTCDate() !== day) {
+    d.setUTCDate(0)
+  }
+  return d.toISOString().slice(0, 10)
+}
+
+/** Format an ISO date string to a human-readable label, e.g. `'2026-06-15'` → `'Jun 15, 2026'`. */
+export function formatDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split('-').map(Number)
+  return new Date(year, month - 1, day).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
 /** True when two dates fall on the same calendar day. */
 export function isSameDay(a: Date, b: Date): boolean {
   return (

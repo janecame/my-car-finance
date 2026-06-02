@@ -16,7 +16,7 @@ import { alpha } from '@mui/material/styles'
 import type { Bill } from '@/types/bill'
 import { categoryMeta } from '@/features/bills/categoryMeta'
 import { formatPHP } from '@/lib/currency'
-import { monthKey } from '@/lib/date'
+import { monthKey, formatDate } from '@/lib/date'
 
 interface Props {
   bill: Bill
@@ -41,16 +41,25 @@ export function BillCard({ bill, onTogglePaid, onEdit, onDelete }: Props) {
           <Typography variant="subtitle1" noWrap sx={{ fontWeight: 600 }}>
             {bill.name}
           </Typography>
-          <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
+          <Stack direction="row" spacing={1} sx={{ alignItems: 'center', flexWrap: 'wrap' }}>
             <Typography variant="body2" color="text.secondary">
               {formatPHP(bill.amountMonthly)} / mo
             </Typography>
             <Chip
               size="small"
               variant="outlined"
-              label={`Due day ${bill.dueDay}`}
+              label={`Due ${formatDate(bill.nextDueDate)}`}
               sx={{ height: 20 }}
             />
+            {bill.endDate && (
+              <Chip
+                size="small"
+                variant="outlined"
+                color="warning"
+                label={`Until ${formatDate(bill.endDate)}`}
+                sx={{ height: 20 }}
+              />
+            )}
           </Stack>
         </Box>
 

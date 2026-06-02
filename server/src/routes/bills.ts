@@ -7,7 +7,7 @@ export const billsRouter = Router();
 billsRouter.get('/', async (_req: Request, res: Response, next: NextFunction) => {
   try {
     const { rows } = await pool.query(
-      'SELECT id, name, category, amount_monthly, due_day, paid_months, created_at, updated_at FROM bills ORDER BY created_at ASC',
+      'SELECT id, name, category, amount_monthly, next_due_date, end_date, paid_months, created_at, updated_at FROM bills ORDER BY created_at ASC',
     );
     res.json({ data: rows.map(toClient) });
   } catch (err) {
@@ -17,15 +17,16 @@ billsRouter.get('/', async (_req: Request, res: Response, next: NextFunction) =>
 
 billsRouter.post('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, category, amountMonthly, dueDay } = req.body as {
+    const { name, category, amountMonthly, nextDueDate, endDate } = req.body as {
       name: string;
       category: string;
       amountMonthly: number;
-      dueDay: number;
+      nextDueDate: string;
+      endDate?: string;
     };
     const { rows } = await pool.query(
-      'INSERT INTO bills (name, category, amount_monthly, due_day) VALUES ($1, $2, $3, $4) RETURNING *',
-      [name, category, amountMonthly, dueDay],
+      'INSERT INTO bills (name, category, amount_monthly, next_due_date, end_date) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [name, category, amountMonthly, nextDueDate, endDate ?? null],
     );
     res.status(201).json({ data: toClient(rows[0]) });
   } catch (err) {
@@ -36,18 +37,20 @@ billsRouter.post('/', async (req: Request, res: Response, next: NextFunction) =>
 billsRouter.patch('/:id', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { id } = req.params;
-    const { name, category, amountMonthly, dueDay } = req.body as {
+    const { name, category, amountMonthly, nextDueDate, endDate } = req.body as {
       name: string;
       category: string;
       amountMonthly: number;
-      dueDay: number;
+      nextDueDate: string;
+      endDate?: string;
     };
     const { rows } = await pool.query(
       `UPDATE bills
-         SET name = $1, category = $2, amount_monthly = $3, due_day = $4, updated_at = now()
-       WHERE id = $5
+         SET name = $1, category = $2, amount_monthly = $3,
+             next_due_date = $4, end_date = $5, updated_at = now()
+       WHERE id = $6
        RETURNING *`,
-      [name, category, amountMonthly, dueDay, id],
+      [name, category, amountMonthly, nextDueDate, endDate ?? null, id],
     );
     if (rows.length === 0) {
       res.status(404).json({ error: 'Bill not found' });
@@ -105,7 +108,8 @@ interface DbBill {
   name: string;
   category: string;
   amount_monthly: string;
-  due_day: number;
+  next_due_date: string;
+  end_date: string | null;
   paid_months: string[];
   created_at: string;
   updated_at: string;
@@ -117,7 +121,8 @@ function toClient(row: DbBill) {
     name: row.name,
     category: row.category,
     amountMonthly: Number(row.amount_monthly),
-    dueDay: row.due_day,
+    nextDueDate: String(row.next_due_date).slice(0, 10),
+    endDate: row.end_date ? String(row.end_date).slice(0, 10) : undefined,
     paidMonths: row.paid_months ?? [],
   };
 }

@@ -35,6 +35,7 @@ server/
 
 ### Environment Variables
 
-- `DATABASE_URL` — Supabase Postgres connection string (set in `.env`, never committed).
-- `PORT` — defaults to `3001`.
-- Never read `process.env` directly in route files — import from a `src/config.ts` that validates required vars at startup.
+Individual connection vars (set in `server/.env`, never committed):
+- `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`, `DB_NAME` — Supabase Postgres credentials.
+- `SERVER_PORT` — defaults to `3001`.
+- Never read `process.env` directly in route files — import from `src/config.ts` which validates all required vars at startup and throws on missing values.

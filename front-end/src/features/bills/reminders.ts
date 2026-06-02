@@ -10,15 +10,17 @@ export interface Reminder {
   daysUntilDue: number
 }
 
-/** Unpaid bills for the current month, classified by how close the due day is. */
+/** Unpaid bills, classified by how close the next due date is. */
 export function buildReminders(bills: Bill[], now: Date = new Date()): Reminder[] {
   const month = monthKey(now)
-  const today = now.getDate()
+  const todayMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
 
   return bills
     .filter((b) => !b.paidMonths.includes(month))
     .map((bill) => {
-      const daysUntilDue = bill.dueDay - today
+      const [y, m, d] = bill.nextDueDate.split('-').map(Number)
+      const dueDateMs = new Date(y, m - 1, d).getTime()
+      const daysUntilDue = Math.round((dueDateMs - todayMs) / 86_400_000)
       const status: ReminderStatus =
         daysUntilDue < 0 ? 'overdue' : daysUntilDue <= 5 ? 'dueSoon' : 'upcoming'
       return { bill, status, daysUntilDue }

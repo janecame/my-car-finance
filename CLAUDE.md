@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`my-car-finance` is a personal car-finance management app for tracking recurring bills and inDrive ride income (PHP / ₱). The frontend MVP is complete and runs against a mock backend. The Express server is a minimal scaffold — no real routes yet.
+`my-car-finance` is a personal car-finance management app for tracking recurring bills and inDrive ride income (PHP / ₱). The frontend MVP is complete and runs against a mock backend. The Express server has full CRUD routes for bills, boundaries, and rides wired to Supabase Postgres.
 
 ## Commands
 
@@ -21,6 +21,16 @@ Server (run from `server/`):
 npm run dev       # ts-node-dev with watch
 npm run build     # tsc
 npm start         # node dist/index.js
+```
+
+Tests:
+```bash
+# Frontend (from front-end/)
+npx vitest run            # single run
+npx vitest                # watch mode
+
+# Backend (from server/)
+npx vitest run
 ```
 
 ## Architecture
@@ -47,6 +57,8 @@ React 19, TypeScript 6, Vite 8, MUI v9, React Router v7, TanStack React Query v5
 - **Zod v4 + zodResolver:** `z.coerce.number()` breaks resolver typing — use plain `z.number()` and convert with `Number()` in the `onChange` handler.
 - **MUI v9 `Stack`:** `alignItems` / `justifyContent` are no longer direct props — move them into `sx`.
 - **Bill payment state:** tracked as `YYYY-MM` strings in `Bill.paidMonths`. Always use `monthKey()` from `src/lib/date.ts`.
+- **Bill due dates:** `dueDay: number` was removed. Bills now carry `nextDueDate: string` (ISO date, advances after each payment) and optional `endDate: string`. Use `advanceOneMonth()` from `src/lib/date.ts` to advance the date.
+- **Bill categories:** `Bill.category` is one of `'motorcycle' | 'phone' | 'car' | 'other'` — use the `billCategories` const from `features/bills/schema.ts`.
 
 ## Prompt Clarification Rule
 

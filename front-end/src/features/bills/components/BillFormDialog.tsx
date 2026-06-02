@@ -28,7 +28,8 @@ const emptyValues: BillFormValues = {
   name: '',
   category: 'other',
   amountMonthly: 0,
-  dueDay: 1,
+  nextDueDate: '',
+  endDate: '',
 }
 
 export function BillFormDialog({ open, bill, saving, onClose, onSubmit }: Props) {
@@ -50,7 +51,8 @@ export function BillFormDialog({ open, bill, saving, onClose, onSubmit }: Props)
               name: bill.name,
               category: bill.category,
               amountMonthly: bill.amountMonthly,
-              dueDay: bill.dueDay,
+              nextDueDate: bill.nextDueDate,
+              endDate: bill.endDate ?? '',
             }
           : emptyValues,
       )
@@ -111,17 +113,32 @@ export function BillFormDialog({ open, bill, saving, onClose, onSubmit }: Props)
               )}
             />
             <Controller
-              name="dueDay"
+              name="nextDueDate"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  onChange={(e) => field.onChange(Number(e.target.value))}
-                  label="Due day of month"
-                  type="number"
+                  label="Next due date"
+                  type="date"
                   fullWidth
-                  error={!!errors.dueDay}
-                  helperText={errors.dueDay?.message}
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  error={!!errors.nextDueDate}
+                  helperText={errors.nextDueDate?.message}
+                />
+              )}
+            />
+            <Controller
+              name="endDate"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Final payment date (optional)"
+                  type="date"
+                  fullWidth
+                  slotProps={{ inputLabel: { shrink: true } }}
+                  error={!!errors.endDate}
+                  helperText={errors.endDate?.message ?? 'Leave blank if the bill has no end date'}
                 />
               )}
             />

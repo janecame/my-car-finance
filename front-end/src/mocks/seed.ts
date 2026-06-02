@@ -8,7 +8,8 @@ export const seedBills: Bill[] = [
     name: 'Motorcycle loan',
     category: 'motorcycle',
     amountMonthly: 3200,
-    dueDay: 5,
+    nextDueDate: '2026-06-05',
+    endDate: '2027-01-05',
     paidMonths: [monthKey()],
   },
   {
@@ -16,7 +17,7 @@ export const seedBills: Bill[] = [
     name: 'Phone plan',
     category: 'phone',
     amountMonthly: 999,
-    dueDay: 12,
+    nextDueDate: '2026-06-12',
     paidMonths: [],
   },
   {
@@ -24,7 +25,8 @@ export const seedBills: Bill[] = [
     name: 'Car financing',
     category: 'car',
     amountMonthly: 8500,
-    dueDay: 20,
+    nextDueDate: '2026-06-20',
+    endDate: '2029-06-20',
     paidMonths: [],
   },
   {
@@ -32,7 +34,7 @@ export const seedBills: Bill[] = [
     name: 'Internet',
     category: 'other',
     amountMonthly: 1499,
-    dueDay: 28,
+    nextDueDate: '2026-06-28',
     paidMonths: [],
   },
 ]

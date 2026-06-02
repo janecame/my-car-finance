@@ -19,8 +19,10 @@ Derived from the TypeScript domain types in `src/types/`:
 |---|---|---|
 | id | uuid | PK |
 | name | text | not null |
+| category | text | 'motorcycle' \| 'phone' \| 'car' \| 'other', not null |
 | amount_monthly | numeric(10,2) | not null |
-| due_day | int | 1–31 |
+| next_due_date | date | not null; advances by one month after each payment |
+| end_date | date | optional final payment date |
 | paid_months | text[] | array of YYYY-MM keys |
 | created_at | timestamptz | |
 | updated_at | timestamptz | |

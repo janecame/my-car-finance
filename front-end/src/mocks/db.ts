@@ -2,6 +2,15 @@ import type { Bill } from '@/types/bill'
 import type { Boundary, Ride } from '@/types/finance'
 import { seedBills, seedBoundary, seedRides } from '@/mocks/seed'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function migrateBill(b: any): Bill {
+  if (!b.nextDueDate) {
+    const day = String(b.dueDay ?? 1).padStart(2, '0')
+    b.nextDueDate = `2026-06-${day}`
+  }
+  return b as Bill
+}
+
 /**
  * In-memory + localStorage mock backend.
  *
@@ -23,7 +32,9 @@ function load(): DbShape {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (raw) {
       try {
-        return JSON.parse(raw) as DbShape
+        const parsed = JSON.parse(raw) as DbShape
+        parsed.bills = parsed.bills.map(migrateBill)
+        return parsed
       } catch {
         // fall through to seed
       }
